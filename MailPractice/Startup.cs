@@ -1,3 +1,5 @@
+
+using MailPractice.MailsManager;
 using MailPractice.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +33,8 @@ namespace MailPractice
             var settings = new EmailSettings();
             Configuration.GetSection("EmailSettings").Bind(settings);
             services.AddSingleton<IEmailSettings>(settings);
+            services.AddSingleton<IMailManager, MailManager>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

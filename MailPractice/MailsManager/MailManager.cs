@@ -12,7 +12,7 @@ using System.Net;
 // using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace MailPractice.MailManager
+namespace MailPractice.MailsManager
 {
     public class MailManager : IMailManager
     {
@@ -37,11 +37,11 @@ namespace MailPractice.MailManager
             client.Dispose();
             return messages;
         }
-        public async Task Send(MimeMessage message) 
+        public async Task Send(MimeMessage message)
         {
             var smtp = new SmtpClient();
-            smtp.Connect(settings.SmtpServer, settings.SmtpPort,true);
-            smtp.Authenticate(settings.SmtpUsername,settings.SmtpPassword);
+            await smtp.ConnectAsync(settings.SmtpServer, settings.SmtpPort,true);
+            await smtp.AuthenticateAsync(settings.SmtpUsername,settings.SmtpPassword);
             await smtp.SendAsync(message);
             smtp.Dispose();
 

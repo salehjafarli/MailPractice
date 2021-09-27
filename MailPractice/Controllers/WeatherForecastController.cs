@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MailPractice.MailsManager;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,15 +19,26 @@ namespace MailPractice.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        public IMailManager Manager { get; set; }
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IMailManager Manager)
         {
             _logger = logger;
+            this.Manager = Manager;
         }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            MimeMessage message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Testing", "salehtesting1@gmail.com"));
+            message.To.Add(new MailboxAddress("Testing", "salehtesting2@gmail.com"));
+            message.Subject = "test";
+            message.Body = new TextPart("plain") { Text = "hello world" };
+            Manager.Send(message);
+
+
+
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
