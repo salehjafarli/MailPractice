@@ -16,7 +16,8 @@ namespace MailPractice.MailsManager
 {
     public class MailManager : IMailManager
     {
-        
+        public static int num = 0;
+
         public readonly IEmailSettings settings;
         public ILogger<MailManager> Logger { get; set; }
         public MailManager(IEmailSettings settings, ILogger<MailManager> Logger)
@@ -47,10 +48,20 @@ namespace MailPractice.MailsManager
             var smtp = new SmtpClient();
             await smtp.ConnectAsync(settings.SmtpServer, settings.SmtpPort,true);
             await smtp.AuthenticateAsync(settings.SmtpUsername,settings.SmtpPassword);
+            num += 1;
+            smtp.MessageSent += Smtp_MessageSent;
             await smtp.SendAsync(message);
             await smtp.DisconnectAsync(true);
+            
             smtp.Dispose();
 
         }
+
+        private void Smtp_MessageSent(object sender, MailKit.MessageSentEventArgs e)
+        {
+            Logger.LogInformation($"Successfully sent {num}  {DateTime.Now}");
+        }
+
+       
     }
 }

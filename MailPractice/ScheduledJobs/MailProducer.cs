@@ -20,19 +20,24 @@ namespace MailPractice.ScheduledJobs
             this.Logger = Logger;
             this.MailManager = MailManager;
         }
+        private object asd = new object();
         public Task Execute(IJobExecutionContext context)
         {
-            Logger.LogInformation("Job was executed");
-            MimeMessage message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Testing", "salehtesting1@gmail.com"));
-            message.To.Add(new MailboxAddress("Testing", "salehtesting2@gmail.com"));
-            message.Subject = "test";
-            message.Body = new TextPart("plain") { Text = "hello world" + num };
             num += 1;
-            Task.Run(async()=> {
-                await MailManager.Send(message);
-            });
-            return Task.CompletedTask;
+            lock (asd)
+            {
+                Logger.LogInformation($"Job was started {num}   {DateTime.Now}");
+                MimeMessage message = new MimeMessage();
+                message.From.Add(new MailboxAddress("Testing", "salehtesting1@gmail.com"));
+                message.To.Add(new MailboxAddress("Testing", "salehtesting2@gmail.com")); 
+                message.Subject = "test";
+                message.Body = new TextPart("plain") { Text = "hello world " + num +" "+ DateTime.Now }; 
+                Task.Run(async () => {
+                    await MailManager.Send(message);
+                });
+                return Task.CompletedTask;
+            }
+            
               
         }
     }

@@ -15,7 +15,16 @@ namespace MailPractice
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
-            CreateHostBuilder(args).Build().Run();
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (Exception e)
+            {
+
+                Log.Information(e.Message);
+            }
+            
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

@@ -53,12 +53,12 @@ namespace MailPractice
                     .WithCronSchedule(Configuration["CronExpressions:EmailProducerCron"]));
 
 
-
-                q.AddJob<MailConsumer>(opts => opts.WithIdentity(CKey));
-                q.AddTrigger(opts => opts
-                    .ForJob(CKey)
-                    .WithIdentity("MailConsumer-trigger")
-                    .WithCronSchedule(Configuration["CronExpressions:EmailConsumerCron"]));
+                q.AddJobListener<MyJobListener>();
+                //q.AddJob<MailConsumer>(opts => opts.WithIdentity(CKey));
+                //q.AddTrigger(opts => opts
+                //    .ForJob(CKey)
+                //    .WithIdentity("MailConsumer-trigger")
+                //    .WithCronSchedule(Configuration["CronExpressions:EmailConsumerCron"]));
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
