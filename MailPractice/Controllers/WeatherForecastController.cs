@@ -30,12 +30,12 @@ namespace MailPractice.Controllers
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
-            MimeMessage message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Testing", "salehtesting1@gmail.com"));
-            message.To.Add(new MailboxAddress("Testing", "salehtesting2@gmail.com"));
-            message.Subject = "test";
-            message.Body = new TextPart("plain") { Text = "hello world" };
-            Manager.Send(message);
+            //MimeMessage message = new MimeMessage();
+            //message.From.Add(new MailboxAddress("Testing", "salehtesting1@gmail.com"));
+            //message.To.Add(new MailboxAddress("Testing", "salehtesting2@gmail.com"));
+            //message.Subject = "test";
+            //message.Body = new TextPart("plain") { Text = "hello world" };
+            //Manager.Send(message);
 
 
 

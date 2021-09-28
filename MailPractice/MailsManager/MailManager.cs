@@ -16,6 +16,7 @@ namespace MailPractice.MailsManager
 {
     public class MailManager : IMailManager
     {
+        
         public readonly IEmailSettings settings;
         public ILogger<MailManager> Logger { get; set; }
         public MailManager(IEmailSettings settings, ILogger<MailManager> Logger)
@@ -27,13 +28,17 @@ namespace MailPractice.MailsManager
         public async Task<List<MimeMessage>> Receive()
         {
             Pop3Client client = new Pop3Client();
-            client.Connect(settings.Pop3Server,settings.Pop3Port,true);
-            client.Authenticate(settings.Pop3Username,settings.SmtpPassword);
-            List<MimeMessage> messages = new List<MimeMessage>(client.Count);
-            for (int i = client.Count; i >0 ; i--)
+            await client.ConnectAsync(settings.Pop3Server,settings.Pop3Port,true);
+            await client.AuthenticateAsync(settings.Pop3Username,settings.SmtpPassword);
+            List<MimeMessage> messages = new List<MimeMessage>();
+            Logger.LogInformation($"Count of messages : {client.Count}");
+            
+            for (int i = client.Count-1; i >=0 ; i--)
             {
                  messages.Add(await client.GetMessageAsync(i));
             }
+            await client.DeleteAllMessagesAsync();
+            await client.DisconnectAsync(true);
             client.Dispose();
             return messages;
         }
@@ -43,6 +48,7 @@ namespace MailPractice.MailsManager
             await smtp.ConnectAsync(settings.SmtpServer, settings.SmtpPort,true);
             await smtp.AuthenticateAsync(settings.SmtpUsername,settings.SmtpPassword);
             await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
             smtp.Dispose();
 
         }

@@ -1,5 +1,6 @@
 
 using MailPractice.MailsManager;
+using MailPractice.ScheduledJobs;
 using MailPractice.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +36,31 @@ namespace MailPractice
             Configuration.GetSection("EmailSettings").Bind(settings);
             services.AddSingleton<IEmailSettings>(settings);
             services.AddSingleton<IMailManager, MailManager>();
+
+            services.AddQuartz(q =>
+            {
+                q.UseMicrosoftDependencyInjectionJobFactory();
+
+                
+                var PKey = new JobKey("MailProducerJob");
+                var CKey = new JobKey("MailConsumerJob");
+
+
+                q.AddJob<MailProducer>(opts => opts.WithIdentity(PKey));
+                q.AddTrigger(opts => opts
+                    .ForJob(PKey) 
+                    .WithIdentity("MailProducer-trigger") 
+                    .WithCronSchedule(Configuration["CronExpressions:EmailProducerCron"]));
+
+
+
+                q.AddJob<MailConsumer>(opts => opts.WithIdentity(CKey));
+                q.AddTrigger(opts => opts
+                    .ForJob(CKey)
+                    .WithIdentity("MailConsumer-trigger")
+                    .WithCronSchedule(Configuration["CronExpressions:EmailConsumerCron"]));
+            });
+            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
