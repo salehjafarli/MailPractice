@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace MailPractice
 {
+    //  Added for some debug purposes
     public class MyJobListener : IJobListener
     {
+       
         public ILogger<MyJobListener> Logger { get; set; }
         public MyJobListener(ILogger<MyJobListener> Logger)
         {
